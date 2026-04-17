@@ -1,15 +1,15 @@
 {
-  "name": "nept-template",
+  "name": "",
   "version": "1.0.0",
-  "description": "NEPT - Node Express Prisma Typescript template",
+  "description": "",
   "main": "src/index.ts",
   "scripts": {
     "lint": "eslint",
     "build": "tsc",
     "test": "jest",
     "typecheck": "tsc --pretty --noEmit",
-    "start": "node dist/index.js",
-    "dev": "nodemon src/index.ts",
+    "start": "npx ts-node src/index.ts",
+    "dev": "nodemon -r ts-node src/index.ts",
     "db:migrate": "NODE_PATH=dist/ node --env-file=.env dist/db/migration.js"
   },
   "author": "thund3rhawk",
