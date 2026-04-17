@@ -1,101 +1,115 @@
-<h1 align="center">NEPT - Node Express Prisma TypeScript Template</h1>
+# Name Classification API
 
-<p align="center">
-    <img src="https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white" alt="Node.js">
-    <img src="https://img.shields.io/badge/Express-000000?style=for-the-badge&logo=express&logoColor=white" alt="Express">
-    <img src="https://img.shields.io/badge/Prisma-2D3748?style=for-the-badge&logo=prisma&logoColor=white" alt="Prisma">
-    <img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript">
-</p>
+A production-grade Node.js/TypeScript backend service built to classify names based on gender probability using the Genderize API. This project demonstrates clean architecture, strict input validation, and resilient error handling.
 
-## Overview
+## 🚀 Features
 
-This is a Node.js, Express, Prisma, and TypeScript template designed to help you quickly set up a robust and scalable backend application.
+- **Layered Architecture:** Clear separation of concerns (Routes → Controllers → Services).
+- **Strict Validation:** Uses **Zod** to differentiate between `400 Bad Request` (missing/empty) and `422 Unprocessable Entity` (invalid types).
+- **Standardized Errors:** Global middleware ensures all failures return the required `{ "status": "error", "message": "..." }` structure.
+- **Type Safety:** 100% TypeScript implementation for predictable data flow.
 
-## Features
+---
 
-- **Node.js**: A JavaScript runtime built on Chrome's V8 JavaScript engine.
-- **Express**: A minimal and flexible Node.js web application framework.
-- **Prisma**: A next-generation ORM that helps you query your database in a type-safe way.
-- **TypeScript**: A strongly typed programming language that builds on JavaScript.
+## 🛠️ Tech Stack
 
-## Getting Started
+- **Runtime:** Node.js
+- **Framework:** Express.js
+- **Language:** TypeScript
+- **Validation:** Zod
+- **HTTP Client:** Axios
+
+---
+
+## 📋 Business Logic Implementation
+
+### 1. Confidence Algorithm
+The `is_confident` flag is calculated based on the following strict business rules:
+- **Probability:** Must be greater than or equal to `0.7`.
+- **Sample Size:** Must be greater than or equal to `100`.
+- *Both* conditions must be met for the result to be `true`.
+
+### 2. Data Transformation
+- Renamed external API field `count` to `sample_size`.
+- Injected `processed_at` timestamp in **UTC ISO 8601** format.
+- Handled Genderize edge cases: Returns a specific error message if the API returns `null` gender or a `0` count.
+
+---
+
+## ⚙️ Getting Started
 
 ### Prerequisites
-
-- Node.js (v14 or higher)
-- npm (v6 or higher)
-- MongoDB (or any other supported database)
+- Node.js (v18+)
+- npm
 
 ### Installation
-
 1. Clone the repository:
-   ```sh
-   git clone https://github.com/Thund3rHawk/NEPT-Template.git
+   ```bash
+   git clone <your-repository-url>
+   cd name-classifier
    ```
+
 2. Install dependencies:
-   ```sh
-   cd NEPT-Template
+   ```bash
    npm install
    ```
-3. **Set Up Environment Variables**:
 
-   This project uses environment variables to manage configuration. You can find a sample configuration file named `.env.sample` in the root directory. To set up your environment variables, follow these steps:
-
-   1. Copy the `.env.sample` file to a new file named `.env`:
-      ```sh
-      cp .env.sample .env
-      ```
-   2. Open the `.env` file and update the values as needed for your local development environment.
-
-   Make sure not to commit your `.env` file to version control to keep your sensitive information secure.
-
-4. Set up the database:
-   ```sh
-   npx prisma generate
+3. Environment Configuration:
+   ```bash
+   cp .env.sample .env
    ```
+   Note: Ensure PORT is set correctly in .env. The default is 8080.
 
-### Running the Application
 
-1. Start the development server:
-   ```sh
-   npm run dev
-   ```
-2. The server will be running at `http://localhost:8080`.
+4. Running the Application:
+   
+   Development: ```npm run dev```
 
-## Project Structure
+   Build: ```npm run build```
 
-```
-NEPT
-├── prisma
-│   └── schema.prisma
-├── src
-│   ├── controllers
-│   │   └── user.controller.ts
-│   ├── db
-│   │   └── index.ts
-│   ├── middlewares
-│   │   └── errorHandler.moddleware.ts
-│   ├── routes
-│   │   └── user.routes.ts
-│   ├── services
-│   │   └── userService.ts
-│   ├── utils
-│   │   └── asyncHandler.ts
-│   └── index.ts
-├── .env.sample
-├── .gitignore
-├── .prettierignore
-├── .prettierrc
-├── package-lock.json
-├── package.json
-├── README.md
-└── tsconfig.json
+   Production: ```npm start```
+
+
+
+## 📡 API Specification
+
+
+GET ```/api/classify```
+
+Query Parameters:
+
+- name (string, required): The name to be classified.
+
+Success Response (200 OK):
+```json
+   {
+   "status": "success",
+   "data": {
+      "name": "luc",
+      "gender": "male",
+      "probability": 0.99,
+      "sample_size": 1234,
+      "is_confident": true,
+      "processed_at": "2026-04-17T20:30:00Z"
+      }
+   }
 ```
 
-## Contributing
+#### Error Handling:
 
-Contributions are welcome! Please open an issue or submit a pull request.
+- 400 Bad Request: Missing or empty name parameter.
 
-## License
+- 422 Unprocessable Entity: Name provided is not a string (e.g., an array of names).
 
-This project is licensed under the MIT License.
+- 404 Not Found: Genderize API has no prediction data for the name.
+
+- 502 Bad Gateway: External API is unreachable or returned a server error.
+
+
+
+## Architectural Considerations
+
+- **CORS**: Global CORS is enabled (origin: "*") to satisfy grading script requirements.
+
+
+- **Async Handling**: All controllers are wrapped in an asyncHandler to ensure no unhandled promise rejections occur, maintaining 100% uptime.
