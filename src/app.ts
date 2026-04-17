@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import classifyRoutes from "./routes/classify.routes";
 import { errorHandler } from "./middlewares/errorHandler.middleware";
 
 const app = express();
@@ -16,6 +17,8 @@ app.get("/health", (req, res) => {
     timestamp: new Date().toISOString(),
   });
 });
+
+app.use("/api", classifyRoutes);
 
 app.use(errorHandler);
 
