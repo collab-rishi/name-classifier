@@ -3,17 +3,19 @@ import { z } from "zod";
 
 export const classifyQuerySchema = z.object({
   name: z
-    .any() 
+    .any()
     .refine((val) => val !== undefined && val !== "", {
-      message: "Name parameter is required", 
+      message: "REQUIRED", 
+    })
+    
+    .refine((val) => !Array.isArray(val), {
+      message: "INVALID_TYPE",
     })
     .refine((val) => typeof val === "string", {
-      message: "Non-string name provided", 
+      message: "INVALID_TYPE",
     })
     .transform((val) => String(val).trim())
     .pipe(
-      z.string().min(1, "Name parameter is required") 
+      z.string().min(1, "REQUIRED")
     ),
 });
-
-export type ClassifyQuery = z.infer<typeof classifyQuerySchema>;
