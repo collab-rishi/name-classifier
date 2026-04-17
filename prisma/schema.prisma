@@ -1,0 +1,26 @@
+datasource db {
+  provider = "mongodb" //add here your database provider
+  url      = env("DATABASE_URL")
+}
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Enter your schema design here and run 'npx prisma db push' after every update to the schema
+// Also see the docs here: https://www.prisma.io/docs/getting-started/setup-prisma/start-from-scratch
+
+// model Post {
+//   id       String    @id @default(auto()) @map("_id") @db.ObjectId
+//   slug     String    @unique
+//   title    String
+//   body     String
+//   author   User      @relation(fields: [authorId], references: [id])
+//   authorId String    @db.ObjectId
+//   comments Comment[]
+// }
+
+// model Comment {
+//   id      String @id @default(auto()) @map("_id") @db.ObjectId
+//   comment String
+//   postId  String @db.ObjectId
+// }
